@@ -11,5 +11,6 @@ It asks if these should be added and then adds them to the bottom of the list, t
 If anyone finds this as annoying as me you are free to use this wrapper for yourself.
 Just download the latest release and modify the config.ini-file to match your setup.
 The wrapper should work fine with the non-steam version of the game as well, although I havent tested myself.
+Just leave out the SteamModDirectory from the config.ini and you should be fine.
 
 The exe-file is compiled using AutoIt (https://www.autoitscript.com/site/autoit/) and the code-file is available here for anyone to use/modify.
