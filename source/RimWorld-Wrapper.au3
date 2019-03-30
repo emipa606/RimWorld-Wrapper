@@ -49,7 +49,7 @@ if Not FileExists($LocalModDirectory) Then
    MsgBox(0, "No LocalModDirectory exists", "LocalModDirectory: " & $LocalModDirectory & " can not be found.")
    Exit
 Else
-   $mods = _FileListToArray($LocalModDirectory, "*", 2, True)
+   $localmods = _FileListToArray($LocalModDirectory, "*", 2, True)
 EndIf
 
 $SteamModDirectory = _WinAPI_ExpandEnvironmentStrings (IniRead($iniFile, "Paths", "SteamModDirectory", "Error"))
@@ -60,8 +60,7 @@ Else
 	  MsgBox(0, "No SteamModDirectory exists", "SteamModDirectory: " & $SteamModDirectory & " can not be found.")
 	  Exit
    Else
-	  $addMods = _FileListToArray($LocalModDirectory, "*", 2, True)
-	  _ArrayAdd($mods, $addMods)
+	  $steammods = _FileListToArray($SteamModDirectory, "*", 2, True)
    EndIf
 EndIf
 
@@ -87,15 +86,25 @@ ConsoleWrite("ModConfigFile: " & $ModConfigFile & @CRLF)
 ConsoleWrite("SaveDirectory: " & $SaveDirectory & @CRLF)
 ConsoleWrite("LocalModDirectory: " & $LocalModDirectory & @CRLF)
 ConsoleWrite("SteamModDirectory: " & $SteamModDirectory & @CRLF)
-ConsoleWrite("RimworldStartCommand: " & $RimworldStartCommand)
+ConsoleWrite("RimworldStartCommand: " & $RimworldStartCommand & @CRLF)
 $lastSave = FileGetTime( $SaveDirectory , 0, 1)
 
 Dim $latestMods[1] = [0]
 Local $i = 1
-For $x = 2 to $mods[0]
-    if FileGetTime($mods[$x],1,1) > $lastSave Then
+For $x = 2 to $localmods[0]
+    if FileGetTime($localmods[$x],1,1) > $lastSave Then
 	  ReDim $latestMods[$latestMods[0] + 2]
-	  $latestMods[$i] = $mods[$x]
+	  $latestMods[$i] = $localmods[$x]
+	  $latestMods[0] = $i
+	  $i = $i + 1
+    EndIf
+Next
+
+$i = 1
+For $x = 2 to $steammods[0]
+    if FileGetTime($steammods[$x],1,1) > $lastSave Then
+	  ReDim $latestMods[$latestMods[0] + 2]
+	  $latestMods[$i] = $steammods[$x]
 	  $latestMods[0] = $i
 	  $i = $i + 1
     EndIf
