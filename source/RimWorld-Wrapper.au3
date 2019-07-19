@@ -4,8 +4,8 @@
 #include <WinAPISys.au3>
 #pragma compile(Icon, .\RimWorld.ico)
 #pragma compile(ProductName, RimWorld Wrapper)
-#pragma compile(ProductVersion, 1.0)
-#pragma compile(FileVersion, 1.0.0.0)
+#pragma compile(ProductVersion, 1.1)
+#pragma compile(FileVersion, 1.1.0.0)
 #pragma compile(FileDescription, RimWorld Wrapper - never start RimWorld twice)
 
 if ProcessExists("RimWorldWin64.exe") Then
@@ -13,40 +13,53 @@ if ProcessExists("RimWorldWin64.exe") Then
    Exit
 EndIf
 
-$iniFile = @ScriptDir & '\config.ini'
+$iniFile = @ScriptDir & '\config.insi'
 if Not FileExists($iniFile) Then
-   MsgBox(0, "Config file not found", "Config.ini not found")
-   Exit
+   $iniFile = @AppDataDir & '\rimworldlauncher.ini'
+EndIf
+
+if Not FileExists($iniFile) Then
+   IniWriteSection($iniFile, "Paths", 'SaveDirectory="' & @UserProfileDir & '\appdata\locallow\Ludeon Studios\RimWorld by Ludeon Studios\Saves"')
+   IniWrite($iniFile, "Paths", "ModConfigFile", '"' & @UserProfileDir & '\appdata\locallow\Ludeon Studios\RimWorld by Ludeon Studios\Config\ModsConfig.xml"')
+   IniWrite($iniFile, "Paths", "SteamModDirectory", '"%programfiles%\Steam\steamapps\workshop\content\294100"')
+   IniWrite($iniFile, "Paths", "LocalModDirectory", '"%programfiles%\Rimworld\Mods"')
+   IniWrite($iniFile, "Paths", "RimworldStartCommand", '"%programfiles%\Steam\Steam.exe" -applaunch 294100')
 EndIf
 
 ; Verify INI-file values
 $SaveDirectory = _WinAPI_ExpandEnvironmentStrings (IniRead($iniFile, "Paths", "SaveDirectory", "Error"))
 if $SaveDirectory = "Error" Then
    MsgBox(0, "No SaveDirectory found", "Config.ini does not contain a SaveDirectory")
+   Run('notepad.exe "' & $iniFile & '"')
    Exit
 EndIf
 if Not FileExists($SaveDirectory) Then
    MsgBox(0, "No SaveDirectory exists", "SaveDirectory: " & $SaveDirectory & " can not be found.")
+   Run('notepad.exe "' & $iniFile & '"')
    Exit
 EndIf
 
 $ModConfigFile = _WinAPI_ExpandEnvironmentStrings (IniRead($iniFile, "Paths", "ModConfigFile", "Error"))
 if $ModConfigFile = "Error" Then
    MsgBox(0, "No ModConfigFile found", "Config.ini does not contain a ModConfigFile")
+   Run('notepad.exe "' & $iniFile & '"')
    Exit
 EndIf
 if Not FileExists($ModConfigFile) Then
    MsgBox(0, "No ModConfigFile exists", "ModConfigFile: " & $ModConfigFile & " can not be found.")
+   Run('notepad.exe "' & $iniFile & '"')
    Exit
 EndIf
 
 $LocalModDirectory = _WinAPI_ExpandEnvironmentStrings (IniRead($iniFile, "Paths", "LocalModDirectory", "Error"))
 if $LocalModDirectory = "Error" Then
    MsgBox(0, "No LocalModDirectory found", "Config.ini does not contain a LocalModDirectory")
+   Run('notepad.exe "' & $iniFile & '"')
    Exit
 EndIf
 if Not FileExists($LocalModDirectory) Then
    MsgBox(0, "No LocalModDirectory exists", "LocalModDirectory: " & $LocalModDirectory & " can not be found.")
+   Run('notepad.exe "' & $iniFile & '"')
    Exit
 Else
    $localmods = _FileListToArray($LocalModDirectory, "*", 2, True)
@@ -58,6 +71,7 @@ if $SteamModDirectory = "Error" Then
 Else
    if Not FileExists($SteamModDirectory) Then
 	  MsgBox(0, "No SteamModDirectory exists", "SteamModDirectory: " & $SteamModDirectory & " can not be found.")
+	  Run('notepad.exe "' & $iniFile & '"')
 	  Exit
    Else
 	  $steammods = _FileListToArray($SteamModDirectory, "*", 2, True)
@@ -67,17 +81,20 @@ EndIf
 $RimworldStartCommand = _WinAPI_ExpandEnvironmentStrings (IniRead($iniFile, "Paths", "RimworldStartCommand", "Error"))
 if $RimworldStartCommand = "Error" Then
    MsgBox(0, "No RimworldStartCommand found", "Config.ini does not contain a RimworldStartCommand")
+   Run('notepad.exe "' & $iniFile & '"')
    Exit
 EndIf
 if StringInStr($RimworldStartCommand, "Steam.exe") > 0 Then
    $SteamPath = StringReplace(StringReplace($RimworldStartCommand, " -applaunch 294100", ""), '"', '')
    if Not FileExists($SteamPath) Then
 	  MsgBox(0, "No RimworldStartCommand exists", "The steam-part in RimworldStartCommand: " & $SteamPath & " can not be found.")
+	  Run('notepad.exe "' & $iniFile & '"')
 	  Exit
    EndIf
 Else
    if Not FileExists($RimworldStartCommand) Then
 	  MsgBox(0, "No RimworldStartCommand exists", "RimworldStartCommand: " & $RimworldStartCommand & " can not be found.")
+	  Run('notepad.exe "' & $iniFile & '"')
 	  Exit
    EndIf
 EndIf
